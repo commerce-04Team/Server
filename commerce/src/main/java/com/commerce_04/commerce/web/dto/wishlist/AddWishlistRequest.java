@@ -13,6 +13,6 @@ import lombok.ToString;
 @AllArgsConstructor
 public class AddWishlistRequest {
 
-	private String memberId;
+	private String userId;
 	private Long productId;
 }
