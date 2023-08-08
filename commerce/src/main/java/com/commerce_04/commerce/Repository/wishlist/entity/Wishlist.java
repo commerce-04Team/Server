@@ -37,5 +37,12 @@ public class Wishlist {
 	@JoinColumn(name = "product_id")
 	private Product product;
 
+	public static Wishlist toEntity(User user, Product product) {
+		return Wishlist.builder()
+			.user(user)
+			.product(product)
+			.build();
+	}
+
 
 }
