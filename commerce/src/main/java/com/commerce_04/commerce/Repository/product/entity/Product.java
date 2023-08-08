@@ -1,17 +1,12 @@
 package com.commerce_04.commerce.Repository.product.entity;
 
 import com.commerce_04.commerce.Repository.user.Entity.User;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,5 +36,29 @@ public class Product {
 
 	@OneToMany(mappedBy = "product")
 	private List<ProductImage> productImages = new ArrayList<>();
+
+	@Column(name = "title", nullable = false)
+	private String title;
+
+	@Column(name = "price", nullable = false)
+	private int price;
+
+	@Column(name = "contents")
+	private String contents;
+
+	@Column(name = "product_status")
+	private String productStatus;
+
+	@Column(name = "create_at", nullable = false)
+	private LocalDateTime createAt;
+
+	@Column(name = "update_at")
+	private LocalDateTime updateAt;
+
+	@Column(name = "delete_at")
+	private LocalDateTime deleteAt;
+
+	@Column(name = "is_delete", nullable = false)
+	private boolean isDelete;
 
 }
