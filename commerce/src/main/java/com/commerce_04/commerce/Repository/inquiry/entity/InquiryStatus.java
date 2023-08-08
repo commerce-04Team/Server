@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "inquiry_status")
+@Entity(name = "Inquiry_Status")
 @Getter
 @Setter
 @NoArgsConstructor

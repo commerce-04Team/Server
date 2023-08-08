@@ -1,7 +1,7 @@
-package com.commerce_04.commerce.Repository.inquiry.entity;
+package com.commerce_04.commerce.Repository.wishlist.entity;
 
+import com.commerce_04.commerce.Repository.product.entity.Product;
 import com.commerce_04.commerce.Repository.user.Entity.User;
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,28 +16,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "Inquiry")
+@Entity(name = "Wishlist")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Inquiry {
+public class Wishlist {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "inquiry_id", nullable = false)
+	@Column(name = "wishlist_id", nullable = false)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@Column(name = "text", nullable = false)
-	private String text;
-
-	@Column(name = "create_at", nullable = false)
-	private LocalDateTime createAt;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id")
+	private Product product;
 
 
 }
