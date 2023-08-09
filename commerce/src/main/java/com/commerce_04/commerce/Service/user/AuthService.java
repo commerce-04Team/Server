@@ -11,6 +11,7 @@ import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipalRolesRepos
 import com.commerce_04.commerce.Service.excpetions.NotAcceptException;
 import com.commerce_04.commerce.Service.excpetions.NotFoundException;
 import com.commerce_04.commerce.Service.excpetions.UserRegistrationException;
+import com.commerce_04.commerce.Service.security.CustomUserDetailService;
 import com.commerce_04.commerce.config.security.JwtTokenProvider;
 import com.commerce_04.commerce.web.dto.user.Login;
 import com.commerce_04.commerce.web.dto.user.SignUp;
@@ -21,9 +22,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -42,11 +45,17 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserPrincipalRolesRepository userPrincipalRolesRepository;
+    private final CustomUserDetailService customUserDetailService;
+
+
+
+
 
     public String login(Login loginRequest) {
-        try {
             String userId = loginRequest.getUser_id();
             String password = loginRequest.getPassword();
+            customUserDetailService.setInputPassword(password);
+            customUserDetailService.loadUserByUsername(userId);
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userId, password)
             );
@@ -57,17 +66,11 @@ public class AuthService {
             List<String> roles = userPrincipal.getUserPrincipalRoles()
                     .stream().map(UserPrincipalRoles::getRoles).map(Roles::getName).collect(Collectors.toList());
 
-
             return jwtTokenProvider.createToken(userId, roles);
-        } catch (AuthenticationException e) {
-            throw new NotAcceptException("아이디 또는 비밀번호가 올바르지 않습니다.");
-        } catch (NotFoundException e) {
-            throw new NotFoundException("사용자를 찾을 수 없습니다.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new NotAcceptException("로그인 할 수 없습니다");
-        }
     }
+
+
+
     // 회원 가입 메서드
     @Transactional
     public boolean registerUser(User user) {
@@ -129,29 +132,6 @@ public class AuthService {
                 .build()
         );
         return true;
-    }
-    public ResponseEntity<String> logoutUser(HttpServletRequest request, HttpServletResponse response) {
-        // SecurityContextHolder에서 인증 정보 제거
-        SecurityContextHolder.clearContext();
-
-        // 세션 무효화
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-
-        // JSESSIONID 쿠키 삭제
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("JSESSIONID")) {
-                    cookie.setMaxAge(0);
-                    response.addCookie(cookie);
-                }
-            }
-        }
-
-        return ResponseEntity.ok("로그아웃이 성공하였습니다.");
     }
 }
 
