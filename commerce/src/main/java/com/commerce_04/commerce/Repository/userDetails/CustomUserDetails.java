@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @ToString
 public class CustomUserDetails implements UserDetails {
 
-    private Integer userId;
+    private String userId;
 
     private String email;
 
@@ -27,9 +27,7 @@ public class CustomUserDetails implements UserDetails {
 
 
 
-    public Integer getUserId() {
-        return userId;
-    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authority.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
