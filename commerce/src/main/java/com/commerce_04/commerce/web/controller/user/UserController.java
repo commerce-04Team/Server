@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/api/sign")
+@RequestMapping("/v1/api")
 public class UserController {
         private final AuthService authService;
 
