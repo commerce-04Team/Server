@@ -116,8 +116,6 @@ public class AuthService {
                         .build()));
 
 
-
-
         // 2. UserName과 Password 등록, 기본 ROLE_USER
         Roles roles = rolesRepository.findByName("ROLE_USER")
                 .orElseGet(() -> rolesRepository.save(new Roles("ROLE_USER")));
@@ -127,6 +125,15 @@ public class AuthService {
                 .password(passwordEncoder.encode(password)) // 비밀번호 인코딩하여 저장
                 .email(user.getEmail())
                 .build();
+
+        userRepository.save(User.builder()
+                .id(userId)
+                .address(user.getAddress())
+                .nickName(user.getNickName())
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(password))
+                .userName(username)
+                .build());
 
         userPrincipalRepository.save(userPrincipal);
         userPrincipalRolesRepository.save(UserPrincipalRoles.builder()
