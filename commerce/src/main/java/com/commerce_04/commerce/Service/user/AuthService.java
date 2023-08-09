@@ -16,6 +16,7 @@ import com.commerce_04.commerce.config.security.JwtTokenProvider;
 import com.commerce_04.commerce.web.dto.user.Login;
 import com.commerce_04.commerce.web.dto.user.SignUp;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -48,27 +50,23 @@ public class AuthService {
     private final CustomUserDetailService customUserDetailService;
 
 
-
-
-
     public String login(Login loginRequest) {
-            String userId = loginRequest.getUser_id();
-            String password = loginRequest.getPassword();
-            customUserDetailService.setInputPassword(password);
-            customUserDetailService.loadUserByUsername(userId);
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userId, password)
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserPrincipal userPrincipal = userPrincipalRepository.findByEmailFetchJoin(userId)
-                    .orElseThrow(() -> new NotFoundException("UserPrincipal을 찾을 수 없습니다"));
+        String userId = loginRequest.getUser_id();
+        String password = loginRequest.getPassword();
+        customUserDetailService.setInputPassword(password);
+        customUserDetailService.loadUserByUsername(userId);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userId, password)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserPrincipal userPrincipal = userPrincipalRepository.findByEmailFetchJoin(userId)
+                .orElseThrow(() -> new NotFoundException("UserPrincipal을 찾을 수 없습니다"));
 
-            List<String> roles = userPrincipal.getUserPrincipalRoles()
-                    .stream().map(UserPrincipalRoles::getRoles).map(Roles::getName).collect(Collectors.toList());
+        List<String> roles = userPrincipal.getUserPrincipalRoles()
+                .stream().map(UserPrincipalRoles::getRoles).map(Roles::getName).collect(Collectors.toList());
 
-            return jwtTokenProvider.createToken(userId, roles);
+        return jwtTokenProvider.createToken(userId, roles);
     }
-
 
 
     // 회원 가입 메서드
@@ -82,10 +80,10 @@ public class AuthService {
         if (userPrincipalRepository.existsByEmail(email)) {
             throw new UserRegistrationException("이미 등록된 이메일입니다.");
         }
-        if (userRepository.existsUserById(userId)){
+        if (userRepository.existsUserById(userId)) {
             throw new UserRegistrationException("이미 등록된 아이디 입니다.");
         }
-        if (userRepository.existsUserByNickName(nickName)){
+        if (userRepository.existsUserByNickName(nickName)) {
             throw new UserRegistrationException("이미 등록된 닉네임 입니다.");
         }
         if (username.length() < 3) {
@@ -132,6 +130,27 @@ public class AuthService {
                 .build()
         );
         return true;
+    }
+
+    @Transactional
+    public boolean deleteUser(String userId) {
+        try {
+            log.info("userId : {}", userId);
+
+            UserPrincipal userPrincipal = userPrincipalRepository.findByUserPrincipalId(userId)
+                    .orElseThrow(() -> new NotFoundException("해당 아이디를 찾을 수 없습니다."));
+
+            // Perform additional checks if needed
+
+            userRepository.delete(userPrincipal.getUser());
+            userPrincipalRolesRepository.deleteByUserPrincipal(userPrincipal);
+            userPrincipalRepository.delete(userPrincipal);
+
+            return true;
+        } catch (Exception e) {
+            // Handle any exceptions here, you can log them for debugging
+            return false;
+        }
     }
 }
 
