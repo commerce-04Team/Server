@@ -14,6 +14,7 @@ import com.commerce_04.commerce.config.security.JwtTokenProvider;
 import com.commerce_04.commerce.web.dto.user.Login;
 import com.commerce_04.commerce.web.dto.user.SignUp;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -131,4 +136,28 @@ public class AuthService {
         );
         return true;
     }
+    public ResponseEntity<String> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        // SecurityContextHolder에서 인증 정보 제거
+        SecurityContextHolder.clearContext();
+
+        // 세션 무효화
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        // JSESSIONID 쿠키 삭제
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("JSESSIONID")) {
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                }
+            }
+        }
+
+        return ResponseEntity.ok("로그아웃이 성공하였습니다.");
+    }
 }
+
