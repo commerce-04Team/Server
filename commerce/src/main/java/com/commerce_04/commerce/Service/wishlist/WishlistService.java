@@ -12,6 +12,8 @@ import com.commerce_04.commerce.Service.wishlist.exception.WishlistErrorCode;
 import com.commerce_04.commerce.Service.wishlist.exception.WishlistException;
 import com.commerce_04.commerce.web.dto.wishlist.AddWishlistRequest;
 import com.commerce_04.commerce.web.dto.wishlist.DeleteWishlistRequest;
+import com.commerce_04.commerce.web.dto.wishlist.WishlistResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,10 @@ public class WishlistService {
 		User validatedUser = verifyMember(inputUserId);
 		Product validatedProduct = verifyProduct(inputProductId);
 
-		isWishlistExist(validatedUser, validatedProduct);
+		if (checkWishlistExist(validatedUser, validatedProduct)) {
+			throw new WishlistException(
+				WishlistErrorCode.PRODUCTS_ON_THE_WISHLIST);
+		}
 
 		wishlistRepository.save(toEntity(validatedUser, validatedProduct));
 	}
@@ -53,14 +58,21 @@ public class WishlistService {
 			wishlistRepository.delete(validatedWishlist);
 		} else {
 			throw new WishlistException(
-				WishlistErrorCode.PRODUCTS_ON_THE_WISHLIST);
+				WishlistErrorCode.PRODUCTS_IS_NOT_ON_THE_WISHLIST);
 		}
+	}
+
+	public List<WishlistResponse> getWishlist(String userId) {
+		verifyMember(userId);
+		return WishlistResponse.toResponse(
+			wishlistRepository.findMyWishlist(userId));
 	}
 
 	private Wishlist ValidatedWishlist(Long inputWishlistId) {
 		return wishlistRepository.findById(
 				inputWishlistId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 상품 입니다."));
+			.orElseThrow(() -> new WishlistException(
+				WishlistErrorCode.WISHLIST_ID_DOES_NOT_EXIST));
 	}
 
 	private Product verifyProduct(Long inputProductId) {
@@ -78,6 +90,11 @@ public class WishlistService {
 				user.getId(), product.getId())
 			.orElseThrow(() -> new WishlistException(
 				WishlistErrorCode.PRODUCTS_IS_NOT_ON_THE_WISHLIST));
+	}
+
+	private boolean checkWishlistExist(User user, Product product) {
+		return wishlistRepository.existsByUserIdAndProductId(
+			user.getId(), product.getId());
 	}
 
 
