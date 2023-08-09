@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+
+//    각 권한에 맞는 기능 설정
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.httpBasic()
