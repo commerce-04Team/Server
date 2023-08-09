@@ -3,9 +3,11 @@ package com.commerce_04.commerce.web.controller.wishlist;
 import com.commerce_04.commerce.Repository.wishlist.entity.Wishlist;
 import com.commerce_04.commerce.Service.wishlist.WishlistService;
 import com.commerce_04.commerce.web.dto.wishlist.AddWishlistRequest;
+import com.commerce_04.commerce.web.dto.wishlist.DeleteWishlistRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,5 +28,15 @@ public class WishlistController {
 		wishlistService.addWishlist(addWishlistRequest);
 		return ResponseEntity.ok("관심 목록에 추가하였습니다!");
 	}
+
+	@DeleteMapping
+	public ResponseEntity<?> deleteWishlist(
+		@RequestBody DeleteWishlistRequest addWishlistRequest
+	) {
+		wishlistService.deleteWishlist(addWishlistRequest);
+		return ResponseEntity.ok("관심 목록에서 삭제하였습니다!");
+	}
+
+
 
 }
