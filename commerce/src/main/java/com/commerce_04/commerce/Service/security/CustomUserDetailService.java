@@ -5,10 +5,8 @@ import com.commerce_04.commerce.Repository.userDetails.CustomUserDetails;
 import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipal;
 import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipalRepository;
 import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipalRoles;
-import com.commerce_04.commerce.Service.excpetions.NotFoundException;
-import com.commerce_04.commerce.web.dto.user.Login;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +21,7 @@ import java.util.stream.Collectors;
 @Primary
 @RequiredArgsConstructor
 @Configuration
+@Slf4j
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
@@ -33,17 +32,17 @@ public class CustomUserDetailService implements UserDetailsService {
         this.inputPassword = inputPassword;
     }
 
+
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+
         UserPrincipal userPrincipal = userPrincipalRepository.findByEmailFetchJoin(id).orElseThrow( () -> new UsernameNotFoundException("아이디가 틀렸습니다."));
 
-
-
+        log.info("inputPassword : {} ",inputPassword);
 
         if (!passwordEncoder().matches(inputPassword, userPrincipal.getPassword())) {
             throw new UsernameNotFoundException("비밀번호가 틀렸습니다.");
         }
-
 
         CustomUserDetails customUserDetails = CustomUserDetails.builder()
                     .userId(userPrincipal.getUser().getId())
@@ -53,9 +52,6 @@ public class CustomUserDetailService implements UserDetailsService {
                     .build();
             return customUserDetails;
         }
-    private boolean idMatches(String userPrincipalId, String userId) {
-        return userPrincipalId.equals(userId);
-    }
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
