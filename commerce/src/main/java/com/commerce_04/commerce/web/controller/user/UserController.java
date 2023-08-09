@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -20,16 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController {
         private final AuthService authService;
 
-//        @PostMapping(value =  "/register")
-//        private String register(@RequestBody SignUp singUpRequest){
-//            boolean isSuccess = authService.signUp(singUpRequest);
-//            return isSuccess ? "회원가입 성공 하였습니다" : "회원가입 실패 하였습니다.";
-//        }
+
         @PostMapping(value = "/login")
-        public String login(@RequestBody Login loginRequest, HttpServletResponse httpServletResponse){
+        public String login(@RequestBody Login loginRequest, HttpServletResponse httpServletResponse) {
             String token = authService.login(loginRequest);
-            httpServletResponse.setHeader("X-AUTH-TOKEN",token);
-            return "로그인이 성공하였습니다.";
+            httpServletResponse.setHeader("X-AUTH-TOKEN", token);
+                return "로그인이 성공하였습니다.";
         }
 
 
@@ -41,5 +38,10 @@ public class UserController {
             } else {
                 return ResponseEntity.badRequest().body("회원가입 실패 하였습니다.");
             }
+        }
+        @PostMapping("/logout")
+        public ResponseEntity<String> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+            authService.logoutUser(request,response);
+            return ResponseEntity.ok("로그아웃의 성공하였습니다");
         }
     }
