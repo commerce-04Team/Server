@@ -16,7 +16,8 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 
 	@Query(
 		" SELECT new com.commerce_04.commerce.Repository.wishlist.repository." +
-			"MyWishlist(w.id, p.id, s.id, seller.id, p.title, p.price, p.productStatus) " +
+			"MyWishlist(w.id, p.id, s.id, seller.id, p.title, p.price, p.productStatus) "
+			+
 			"FROM Wishlist w " +
 			"JOIN w.product p " +
 			"JOIN p.store s " +
@@ -25,5 +26,6 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 			"WHERE w.user.id = :userId")
 	List<MyWishlist> findMyWishlist(String userId);
 
-
+	@Query("SELECT count (w) FROM Wishlist w WHERE w.product.id = :productId")
+	Long countByProductId(Long productId);
 }

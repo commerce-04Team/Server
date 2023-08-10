@@ -6,7 +6,9 @@ import com.commerce_04.commerce.Repository.product.entity.Product;
 import com.commerce_04.commerce.Repository.product.repository.ProductRepository;
 import com.commerce_04.commerce.Repository.user.Entity.User;
 import com.commerce_04.commerce.Repository.user.Entity.UserRepository;
+import com.commerce_04.commerce.Repository.wishlist.entity.WishCountScheduling;
 import com.commerce_04.commerce.Repository.wishlist.entity.Wishlist;
+import com.commerce_04.commerce.Repository.wishlist.repository.WishCountSchedulingRepository;
 import com.commerce_04.commerce.Repository.wishlist.repository.WishlistRepository;
 import com.commerce_04.commerce.Service.wishlist.exception.WishlistErrorCode;
 import com.commerce_04.commerce.Service.wishlist.exception.WishlistException;
@@ -17,6 +19,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +29,9 @@ public class WishlistService {
 	private final WishlistRepository wishlistRepository;
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
+	private final WishCountSchedulingRepository wishCountSchedulingRepository;
 
+	@Transactional
 	public void addWishlist(AddWishlistRequest addWishlistRequest) {
 
 		String inputUserId = addWishlistRequest.getUserId();
@@ -41,6 +46,7 @@ public class WishlistService {
 		}
 
 		wishlistRepository.save(toEntity(validatedUser, validatedProduct));
+		wishCountUpdateRole(validatedProduct, true);
 	}
 
 	public void deleteWishlist(DeleteWishlistRequest deleteWishlistRequest) {
@@ -56,9 +62,30 @@ public class WishlistService {
 		if (validatedWishlist.equals(
 			isWishlistExist(validatedUser, validatedProduct))) {
 			wishlistRepository.delete(validatedWishlist);
+
+			wishCountUpdateRole(validatedProduct, false);
 		} else {
 			throw new WishlistException(
 				WishlistErrorCode.PRODUCTS_IS_NOT_ON_THE_WISHLIST);
+		}
+	}
+
+	private void addSchedule(Product product) {
+
+		if (!wishCountSchedulingRepository.existsByProductId(product.getId())) {
+			WishCountScheduling newSchedule = WishCountScheduling.builder()
+				.product(product)
+				.build();
+			wishCountSchedulingRepository.save(newSchedule);
+		}
+	}
+
+	private void wishCountUpdateRole(Product product, boolean plusOrMinus) {
+		if (product.getWishCount() >= 1000) {
+			addSchedule(product);
+		} else {
+			product.setWishCount(
+				productRepository.count() + (plusOrMinus ? 1 : -1));
 		}
 	}
 
