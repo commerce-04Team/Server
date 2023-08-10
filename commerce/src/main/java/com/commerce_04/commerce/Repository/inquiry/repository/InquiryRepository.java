@@ -9,17 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
 
-	//	@Query(
-//		"SELECT new com.commerce_04.commerce.Repository.inquiry.repository" +
-//			".RegisteredInquiry(i.id, seller.id, registeredUser.id, p.id, s.id, is.inquiryStatus) " +
-//			"FROM Inquiry i " +
-//			"JOIN i.user registeredUser " +
-//			"JOIN i.product p " +
-//			"JOIN p.store s " +
-//			"JOIN s.user seller " +
-//			"JOIN i.inquiryStatus is " +
-//			"WHERE registeredUser.id = :userId")
 	List<Inquiry> findAllByUserId(String userId);
+
 	@Query(
 		"SELECT new com.commerce_04.commerce.Repository.inquiry.repository"
 			+ ".InquiriesReceived(i.id, recipient.id, sender.id, p.id, s.id, st.inquiryStatus) "

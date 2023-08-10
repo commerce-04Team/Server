@@ -14,12 +14,13 @@ import com.commerce_04.commerce.Repository.user.Entity.UserRepository;
 import com.commerce_04.commerce.Service.inquiry.exception.InquiryErrorCode;
 import com.commerce_04.commerce.Service.inquiry.exception.InquiryException;
 import com.commerce_04.commerce.web.dto.inquiry.AnswerInquireRequest;
+import com.commerce_04.commerce.web.dto.inquiry.GetInquiryDetailResponse;
 import com.commerce_04.commerce.web.dto.inquiry.InquiriesReceivedResponse;
 import com.commerce_04.commerce.web.dto.inquiry.InquiriesSentResponse;
-import com.commerce_04.commerce.web.dto.inquiry.GetInquiryDetailResponse;
 import com.commerce_04.commerce.web.dto.inquiry.ToInquireRequest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -79,6 +80,32 @@ public class InquiryService {
 		validatedInquiry.setInquiryStatus(inquiryStatus);
 	}
 
+	public List<InquiriesSentResponse> getInquiresSent(String userId) {
+		return InquiriesSentResponse.toResponse(
+			inquiryRepository.findAllByUserId(userId));
+	}
+
+	public List<InquiriesReceivedResponse> getInquiresReceived(String userId) {
+		return InquiriesReceivedResponse.toResponse(
+			inquiryRepository.findInquiriesReceivedByUserId(userId));
+	}
+
+	public void deleteInquiry(String inputUserId, Long inquiryId) {
+
+		verifyUser(inputUserId);
+		Inquiry validatedInquiry = verifyInquiry(inquiryId);
+
+		String senderId = validatedInquiry.getUser().getId();
+
+		if (Objects.equals(senderId, inputUserId)) {
+			inquiryRepository.delete(validatedInquiry);
+		} else {
+			throw new InquiryException(
+				InquiryErrorCode.YOU_DO_NOT_HAVE_PERMISSION);
+		}
+
+	}
+
 	private User verifyUser(String inputUserId) {
 		return userRepository.findById(inputUserId)
 			.orElseThrow(() -> new RuntimeException("존재하지 않는 유저 입니다."));
@@ -93,13 +120,5 @@ public class InquiryService {
 		return inquiryRepository.findById(inputInquiryId)
 			.orElseThrow(() -> new InquiryException(
 				InquiryErrorCode.NO_INQUIRY_MATCHES));
-	}
-
-	public List<InquiriesSentResponse> getInquiresSent(String userId) {
-		return InquiriesSentResponse.toResponse(inquiryRepository.findAllByUserId(userId));
-	}
-
-	public List<InquiriesReceivedResponse> getInquiresReceived(String userId) {
-		return 		InquiriesReceivedResponse.toResponse(inquiryRepository.findInquiriesReceivedByUserId(userId));
 	}
 }
