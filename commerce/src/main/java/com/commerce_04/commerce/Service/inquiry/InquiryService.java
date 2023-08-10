@@ -1,6 +1,8 @@
 package com.commerce_04.commerce.Service.inquiry;
 
+import static com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType.ANSWER_COMPLETE;
 import static com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType.DO_NOT_READ;
+import static com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType.READ;
 
 import com.commerce_04.commerce.Repository.inquiry.entity.Inquiry;
 import com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatus;
@@ -12,11 +14,14 @@ import com.commerce_04.commerce.Repository.user.Entity.User;
 import com.commerce_04.commerce.Repository.user.Entity.UserRepository;
 import com.commerce_04.commerce.Service.inquiry.exception.InquiryErrorCode;
 import com.commerce_04.commerce.Service.inquiry.exception.InquiryException;
+import com.commerce_04.commerce.web.dto.inquiry.AnswerInquireRequest;
 import com.commerce_04.commerce.web.dto.inquiry.GetInquireDetailResponse;
 import com.commerce_04.commerce.web.dto.inquiry.ToInquireRequest;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,14 +51,30 @@ public class InquiryService {
 
 	public GetInquireDetailResponse getInquireDetail(
 		String inputUserId,
-		Long inquiryId) {
+		Long inputInquiryId) {
 
 		verifyUser(inputUserId);
-		Inquiry validatedInquiry = verifyInquiry(inquiryId);
+		Inquiry validatedInquiry = verifyInquiry(inputInquiryId);
 
 		return GetInquireDetailResponse.toResponse(validatedInquiry);
+	}
 
+	@Transactional
+	public void answerInquireDetail(AnswerInquireRequest answerInquireRequest) {
 
+		String inputUserId = answerInquireRequest.getUserId();
+		Long inputInquiryId = answerInquireRequest.getInquiryId();
+		String inputAnswer = answerInquireRequest.getAnswer();
+
+		verifyUser(inputUserId);
+		Inquiry validatedInquiry = verifyInquiry(inputInquiryId);
+
+		InquiryStatus inquiryStatus = inquiryStatusRepository
+			.findByInquiryStatus(ANSWER_COMPLETE);
+
+		validatedInquiry.setAnswer(inputAnswer);
+		validatedInquiry.setAnswerAt(LocalDateTime.now());
+		validatedInquiry.setInquiryStatus(inquiryStatus);
 	}
 
 	private User verifyUser(String inputUserId) {
@@ -71,5 +92,4 @@ public class InquiryService {
 			.orElseThrow(() -> new InquiryException(
 				InquiryErrorCode.NO_INQUIRY_MATCHES));
 	}
-
 }
