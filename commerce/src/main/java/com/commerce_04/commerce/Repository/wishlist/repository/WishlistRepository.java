@@ -24,4 +24,6 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 			"JOIN w.user payer " +
 			"WHERE w.user.id = :userId")
 	List<MyWishlist> findMyWishlist(String userId);
+
+
 }

@@ -2,13 +2,16 @@ package com.commerce_04.commerce.web.controller.purchase;
 
 import com.commerce_04.commerce.Service.purchase.PurchaseService;
 import com.commerce_04.commerce.web.dto.purchase.AddPurchaseRequest;
+import com.commerce_04.commerce.web.dto.purchase.PurchaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/v1/api/purchase")
+@RequestMapping("/v1/api/purchases")
 @RequiredArgsConstructor
 @Slf4j
 public class PurchaseController {
@@ -17,10 +20,20 @@ public class PurchaseController {
 
     @PostMapping
     public ResponseEntity<?> completePurchase(@RequestBody AddPurchaseRequest addPurchaseRequest) {
-        log.info("AddPurchaseRequest {}",addPurchaseRequest.getProductId());
-        log.info("AddPurchaseRequest {}",addPurchaseRequest.getUserId());
         purchaseService.addPurchase(addPurchaseRequest);
 
         return ResponseEntity.ok("구매 완료되었습니다!");
     }
+
+    @GetMapping
+    public ResponseEntity<List<PurchaseResponse>> getPurchases(@RequestParam String userId) {
+        return ResponseEntity.ok(purchaseService.getPurchases(userId));
+    }
+
+    @GetMapping("/detail")
+    public PurchaseResponse getPurchase(@RequestParam Long productId,@RequestParam String userId) {
+        return purchaseService.getPurchase(productId,userId);
+    }
+
+
 }
