@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -86,5 +87,12 @@ public class ProductService {
 
         }
         //return getProduct(product.getProductId());
+    }
+
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+        Product productEntity = productRepository.findById(productId).orElseThrow(()->new RuntimeException("존재하지 않는 상품입니다."));
+        productEntity.setIsDelete(true);
     }
 }
