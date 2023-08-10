@@ -32,6 +32,7 @@ public class ProductDto {
     private String updateAt;
     private String deleteAt;
     private boolean isDelete;
+    private Long wishCount;
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static ProductDto toResponse(Product product) {
@@ -49,6 +50,7 @@ public class ProductDto {
                 .updateAt(product.getUpdateAt().format(formatter))
                 .deleteAt(product.getDeleteAt().format(formatter))
                 .isDelete(product.getIsDelete())
+                .wishCount(product.getWishCount())
                 .build();
     }
 

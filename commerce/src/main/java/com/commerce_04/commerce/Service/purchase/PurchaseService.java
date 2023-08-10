@@ -7,9 +7,12 @@ import com.commerce_04.commerce.Repository.purchase.repository.PurchaseRepositor
 import com.commerce_04.commerce.Repository.user.Entity.User;
 import com.commerce_04.commerce.Repository.user.Entity.UserRepository;
 import com.commerce_04.commerce.web.dto.purchase.AddPurchaseRequest;
+import com.commerce_04.commerce.web.dto.purchase.PurchaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -29,5 +32,16 @@ public class PurchaseService {
 
         product.setProductStatus("C");
         purchaseRepository.save(Purchase.toEntity(user,product));
+    }
+
+    public PurchaseResponse getPurchase(Long productId, String userId) {
+        Purchase purchase = purchaseRepository.findByUserIdAndProductId(userId, productId);
+
+        return PurchaseResponse.toResponse(purchase);
+    }
+
+    public List<PurchaseResponse> getPurchases(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다."));
+        return PurchaseResponse.toResponse(purchaseRepository.findMyPurchaseList(userId));
     }
 }

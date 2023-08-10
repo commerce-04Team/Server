@@ -61,6 +61,9 @@ public class Product {
 	@Column(name = "is_delete", nullable = false)
 	private Boolean isDelete;
 
+	@Column(name = "wish_count")
+	private Long wishCount;
+
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	public static Product toEntity(AddProduct addProduct, Store store, Category category) {
 		return Product.builder()
@@ -74,6 +77,7 @@ public class Product {
 				.updateAt(LocalDateTime.parse(addProduct.getUpdateAt(),formatter))
 				.deleteAt(LocalDateTime.parse(addProduct.getDeleteAt(),formatter))
 				.isDelete(addProduct.isDelete())
+				.wishCount(0L)
 				.build();
 
 	}
