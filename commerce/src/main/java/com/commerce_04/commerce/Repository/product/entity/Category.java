@@ -1,11 +1,9 @@
 package com.commerce_04.commerce.Repository.product.entity;
 
 import com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +23,7 @@ public class Category {
 	@Column(name = "category_id", nullable = false)
 	private Long id;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "category", nullable = false)
 	private CategoryType category;
 }

@@ -1,12 +1,14 @@
 package com.commerce_04.commerce.Repository.product.entity;
 
-import com.commerce_04.commerce.Repository.user.Entity.User;
-
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.*;
 
+import com.commerce_04.commerce.web.dto.product.AddProduct;
+import com.commerce_04.commerce.web.dto.product.ProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +32,7 @@ public class Product {
 	@JoinColumn(name = "store_id")
 	private Store store;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category")
 	private Category category;
 
@@ -41,7 +43,7 @@ public class Product {
 	private String title;
 
 	@Column(name = "price", nullable = false)
-	private int price;
+	private Integer price;
 
 	@Column(name = "contents")
 	private String contents;
@@ -59,6 +61,23 @@ public class Product {
 	private LocalDateTime deleteAt;
 
 	@Column(name = "is_delete", nullable = false)
-	private boolean isDelete;
+	private Boolean isDelete;
+
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	public static Product toEntity(AddProduct addProduct, Store store, Category category) {
+		return Product.builder()
+				.store(store)
+				.category(category)
+				.title(addProduct.getTitle())
+				.price(addProduct.getPrice())
+				.contents(addProduct.getContents())
+				.productStatus(addProduct.getProductStatus())
+				.createAt(LocalDateTime.parse(addProduct.getCreateAt(),formatter))
+				.updateAt(LocalDateTime.parse(addProduct.getUpdateAt(),formatter))
+				.deleteAt(LocalDateTime.parse(addProduct.getDeleteAt(),formatter))
+				.isDelete(addProduct.isDelete())
+				.build();
+
+	}
 
 }
