@@ -10,5 +10,5 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class ProductResponse {
-    private List<ProductRequest> products;
+    private List<ProductDto> products;
 }

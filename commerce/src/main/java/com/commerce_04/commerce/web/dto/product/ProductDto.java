@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
-public class ProductRequest {
+public class ProductDto {
 
     private String userId;
     private Long productId;
@@ -34,8 +34,8 @@ public class ProductRequest {
     private boolean isDelete;
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    public static ProductRequest toResponse(Product product) {
-        return ProductRequest.builder()
+    public static ProductDto toResponse(Product product) {
+        return ProductDto.builder()
                 .productId(product.getId())
                 .userId(product.getStore().getUser().getId())
                 .category(product.getCategory().getCategory().name())
@@ -52,7 +52,7 @@ public class ProductRequest {
                 .build();
     }
 
-    public static List<ProductRequest> toResponse(List<Product> list) {
-        return list.stream().map(ProductRequest::toResponse).collect(Collectors.toList());
+    public static List<ProductDto> toResponse(List<Product> list) {
+        return list.stream().map(ProductDto::toResponse).collect(Collectors.toList());
     }
 }
