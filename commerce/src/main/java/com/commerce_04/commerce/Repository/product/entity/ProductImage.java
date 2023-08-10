@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.commerce_04.commerce.web.dto.product.ProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

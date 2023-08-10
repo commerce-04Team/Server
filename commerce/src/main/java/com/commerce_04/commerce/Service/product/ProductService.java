@@ -7,7 +7,7 @@ import com.commerce_04.commerce.Repository.product.repository.ProductRepository;
 import com.commerce_04.commerce.Repository.product.repository.StoreRepository;
 import com.commerce_04.commerce.Repository.user.Entity.UserRepository;
 import com.commerce_04.commerce.web.dto.product.AddProduct;
-import com.commerce_04.commerce.web.dto.product.ProductRequest;
+import com.commerce_04.commerce.web.dto.product.ProductDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,9 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
 
 
-    public List<ProductRequest> findAllProducts() {
+    public List<ProductDto> findAllProducts() {
         List<Product> productEntities = productRepository.findAll();
-        return ProductRequest.toResponse(productEntities);
+        return ProductDto.toResponse(productEntities);
     }
 
     public void addProduct(AddProduct addProduct) {
@@ -43,9 +43,13 @@ public class ProductService {
         });
     }
 
-    public ProductRequest getProduct(Long productId) {
+    public ProductDto getProduct(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("상품이 존재하지 않습니다."));
-        return ProductRequest.toResponse(product);
+        return ProductDto.toResponse(product);
     }
 
+    public List<ProductDto> getStoreProducts(Long id) {
+        List<Product> products = productRepository.findByStoreId(id);
+        return ProductDto.toResponse(products);
+    }
 }

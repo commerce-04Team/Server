@@ -2,7 +2,7 @@ package com.commerce_04.commerce.web.controller.product;
 
 import com.commerce_04.commerce.Service.product.ProductService;
 import com.commerce_04.commerce.web.dto.product.AddProduct;
-import com.commerce_04.commerce.web.dto.product.ProductRequest;
+import com.commerce_04.commerce.web.dto.product.ProductDto;
 import com.commerce_04.commerce.web.dto.product.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class ProductController {
 
     @GetMapping
     public ProductResponse findAllProducts() {
-        List<ProductRequest> products = productService.findAllProducts();
+        List<ProductDto> products = productService.findAllProducts();
         return new ProductResponse(products);
     }
 
@@ -31,9 +31,15 @@ public class ProductController {
     }
 
     @GetMapping("/")
-    public ProductRequest getProduct(@RequestParam Long productId) {
+    public ProductDto getProduct(@RequestParam Long productId) {
         return productService.getProduct(productId);
 
+    }
+
+    @GetMapping("/store")
+    public ProductResponse getStoreProducts(@RequestParam Long storeId) {
+        List<ProductDto> storeProducts=productService.getStoreProducts(storeId);
+        return new ProductResponse(storeProducts);
     }
 
 
