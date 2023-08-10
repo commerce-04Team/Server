@@ -22,4 +22,12 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
 			+ "JOIN i.inquiryStatus st "
 			+ "WHERE recipient.id = :userId")
 	List<InquiriesReceived> findInquiriesReceivedByUserId(String userId);
+
+	@Query(
+		"SELECT COUNT(u) FROM Inquiry i "
+			+ "JOIN i.product p "
+			+ "JOIN p.store s "
+			+ "JOIN s.user u "
+			+ "WHERE u.id = :userId")
+	Long checkRecipients(String userId);
 }

@@ -2,6 +2,7 @@ package com.commerce_04.commerce.Service.inquiry;
 
 import static com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType.ANSWER_COMPLETE;
 import static com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType.DO_NOT_READ;
+import static com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType.READ;
 
 import com.commerce_04.commerce.Repository.inquiry.entity.Inquiry;
 import com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatus;
@@ -37,6 +38,7 @@ public class InquiryService {
 	private final ProductRepository productRepository;
 	private final InquiryRepository inquiryRepository;
 	private final InquiryStatusRepository inquiryStatusRepository;
+
 	@CacheEvict(value = "inquires", allEntries = true)
 	public void toInquire(ToInquireRequest toInquireRequest) {
 
@@ -62,7 +64,17 @@ public class InquiryService {
 		verifyUser(inputUserId);
 		Inquiry validatedInquiry = verifyInquiry(inputInquiryId);
 
+		if (isRecipientCheck(inputUserId)) {
+			InquiryStatus inquiryStatus = inquiryStatusRepository
+				.findByInquiryStatus(READ);
+			validatedInquiry.setInquiryStatus(inquiryStatus);
+		}
+
 		return GetInquiryDetailResponse.toResponse(validatedInquiry);
+	}
+
+	private boolean isRecipientCheck(String inputUserId) {
+		return inquiryRepository.checkRecipients(inputUserId) > 0;
 	}
 
 	@Transactional
@@ -83,11 +95,13 @@ public class InquiryService {
 		validatedInquiry.setAnswerAt(LocalDateTime.now());
 		validatedInquiry.setInquiryStatus(inquiryStatus);
 	}
+
 	@Cacheable(value = "inquires", key = "#userId")
 	public List<InquiriesSentResponse> getInquiresSent(String userId) {
 		return InquiriesSentResponse.toResponse(
 			inquiryRepository.findAllByUserId(userId));
 	}
+
 	@Cacheable(value = "inquires", key = "#userId")
 	public List<InquiriesReceivedResponse> getInquiresReceived(String userId) {
 		return InquiriesReceivedResponse.toResponse(
