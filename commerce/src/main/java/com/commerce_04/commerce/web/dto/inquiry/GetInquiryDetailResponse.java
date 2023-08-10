@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetInquireDetailResponse {
+public class GetInquiryDetailResponse {
 
 	private Long inquiryId;
 	private String userId;
@@ -29,13 +29,13 @@ public class GetInquireDetailResponse {
 	private LocalDateTime createAt;
 	private LocalDateTime answerAt;
 
-	public static GetInquireDetailResponse toResponse(Inquiry inquiry) {
+	public static GetInquiryDetailResponse toResponse(Inquiry inquiry) {
 		User user = inquiry.getUser();
 		Product product = inquiry.getProduct();
 		Store store = product.getStore();
 		InquiryStatus inquiryStatus = inquiry.getInquiryStatus();
 
-		return GetInquireDetailResponse.builder()
+		return GetInquiryDetailResponse.builder()
 			.inquiryId(inquiry.getId())
 			.userId(user.getId())
 			.productId(product.getId())
