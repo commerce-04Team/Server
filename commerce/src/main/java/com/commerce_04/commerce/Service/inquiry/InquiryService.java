@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +37,7 @@ public class InquiryService {
 	private final ProductRepository productRepository;
 	private final InquiryRepository inquiryRepository;
 	private final InquiryStatusRepository inquiryStatusRepository;
-
+	@CacheEvict(value = "inquires", allEntries = true)
 	public void toInquire(ToInquireRequest toInquireRequest) {
 
 		String inputUserId = toInquireRequest.getUserId();
@@ -52,6 +54,7 @@ public class InquiryService {
 				toInquireRequest));
 	}
 
+	@CacheEvict(value = "inquires", allEntries = true)
 	public GetInquiryDetailResponse getInquireDetail(
 		String inputUserId,
 		Long inputInquiryId) {
@@ -63,6 +66,7 @@ public class InquiryService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "inquires", allEntries = true)
 	public void answerInquire(AnswerInquireRequest answerInquireRequest) {
 
 		String inputUserId = answerInquireRequest.getUserId();
@@ -79,17 +83,18 @@ public class InquiryService {
 		validatedInquiry.setAnswerAt(LocalDateTime.now());
 		validatedInquiry.setInquiryStatus(inquiryStatus);
 	}
-
+	@Cacheable(value = "inquires", key = "#userId")
 	public List<InquiriesSentResponse> getInquiresSent(String userId) {
 		return InquiriesSentResponse.toResponse(
 			inquiryRepository.findAllByUserId(userId));
 	}
-
+	@Cacheable(value = "inquires", key = "#userId")
 	public List<InquiriesReceivedResponse> getInquiresReceived(String userId) {
 		return InquiriesReceivedResponse.toResponse(
 			inquiryRepository.findInquiriesReceivedByUserId(userId));
 	}
 
+	@CacheEvict(value = "inquires", allEntries = true)
 	public void deleteInquiry(String inputUserId, Long inquiryId) {
 
 		verifyUser(inputUserId);

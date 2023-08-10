@@ -35,6 +35,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     // jwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    // Spring Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework:spring-context-support'
 }
 
 tasks.named('test') {
