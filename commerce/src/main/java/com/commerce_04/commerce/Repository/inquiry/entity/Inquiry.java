@@ -46,8 +46,14 @@ public class Inquiry {
 	@Column(name = "text", nullable = false)
 	private String text;
 
+	@Column(name = "answer")
+	private String answer;
+
 	@Column(name = "create_at", nullable = false)
 	private LocalDateTime createAt;
+
+	@Column(name = "answer_at")
+	private LocalDateTime answerAt;
 
 	public static Inquiry toEntity(User user, Product product,
 		InquiryStatus inquiryStatus, ToInquireRequest toInquireRequest) {
