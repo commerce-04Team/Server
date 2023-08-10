@@ -14,7 +14,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisteredInquiry {
+public class InquiriesReceived {
 
 	private Long inquiryId;
 	private String sellerId;
