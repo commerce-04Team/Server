@@ -2,6 +2,8 @@ package com.commerce_04.commerce.Repository.inquiry.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +26,7 @@ public class InquiryStatus {
 	@Column(name = "inquiry_status_id", nullable = false)
 	private Long id;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "inquiry_status", nullable = false)
 	private InquiryStatusType inquiryStatus;
 }

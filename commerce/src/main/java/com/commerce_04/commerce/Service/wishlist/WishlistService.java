@@ -32,7 +32,7 @@ public class WishlistService {
 		String inputUserId = addWishlistRequest.getUserId();
 		Long inputProductId = addWishlistRequest.getProductId();
 
-		User validatedUser = verifyMember(inputUserId);
+		User validatedUser = verifyUser(inputUserId);
 		Product validatedProduct = verifyProduct(inputProductId);
 
 		if (checkWishlistExist(validatedUser, validatedProduct)) {
@@ -49,7 +49,7 @@ public class WishlistService {
 		Long inputProductId = deleteWishlistRequest.getProductId();
 		Long inputWishlistId = deleteWishlistRequest.getWishlistId();
 
-		User validatedUser = verifyMember(inputUserId);
+		User validatedUser = verifyUser(inputUserId);
 		Product validatedProduct = verifyProduct(inputProductId);
 		Wishlist validatedWishlist = ValidatedWishlist(inputWishlistId);
 
@@ -63,7 +63,7 @@ public class WishlistService {
 	}
 
 	public List<WishlistResponse> getWishlist(String userId) {
-		verifyMember(userId);
+		verifyUser(userId);
 		return WishlistResponse.toResponse(
 			wishlistRepository.findMyWishlist(userId));
 	}
@@ -80,7 +80,7 @@ public class WishlistService {
 			.orElseThrow(() -> new RuntimeException("존재하지 않는 상품 입니다."));
 	}
 
-	private User verifyMember(String inputUserId) {
+	private User verifyUser(String inputUserId) {
 		return userRepository.findById(inputUserId)
 			.orElseThrow(() -> new RuntimeException("존재하지 않는 유저 입니다."));
 	}
