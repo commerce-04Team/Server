@@ -31,8 +31,10 @@ public class SecurityConfig{
                         .rememberMe().disable()
                         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .and()
-                        .authorizeRequests().antMatchers("/resources/static/**","/v1/api/*").permitAll()
-//                        .antMatchers("/v1/api/*").hasRole("USER") 미구현
+                        .authorizeRequests()
+//                        .antMatchers("/admin/*").hasRole("ADMIN_USER") 미구현
+                        .antMatchers("/resources/static/**","/v1/api/*").permitAll()
+//                        .antMatchers("/v1/api/*").hasRole("SUSPENDED_USER") 미구현
                         .and()
                         .exceptionHandling()
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())

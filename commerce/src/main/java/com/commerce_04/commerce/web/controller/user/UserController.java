@@ -113,4 +113,14 @@ public class UserController {
         User user = authService.getUserById(userId);
         return new PublicInformation(user.getNickName(),user.getEmail());
     }
+    @PostMapping("/changeUserRole")
+    public ResponseEntity<String> changeUserRole(@RequestParam String userId, @RequestParam String roles) {
+        boolean isSuccess = authService.changeUserRole(userId,roles);
+        if (isSuccess) {
+            return ResponseEntity.ok("사용자 권한 변경에 성공하였습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("사용자 권한 변경에 실패하였습니다.");
+        }
+    }
 }
+
