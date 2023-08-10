@@ -135,12 +135,10 @@ public class AuthService {
     @Transactional
     public boolean deleteUser(String userId) {
         try {
-            log.info("userId : {}", userId);
 
             UserPrincipal userPrincipal = userPrincipalRepository.findByUserPrincipalId(userId)
                     .orElseThrow(() -> new NotFoundException("해당 아이디를 찾을 수 없습니다."));
 
-            // Perform additional checks if needed
 
             userRepository.delete(userPrincipal.getUser());
             userPrincipalRolesRepository.deleteByUserPrincipal(userPrincipal);
@@ -148,9 +146,28 @@ public class AuthService {
 
             return true;
         } catch (Exception e) {
-            // Handle any exceptions here, you can log them for debugging
             return false;
         }
+    }
+    @Transactional
+    public boolean changePassword(String jwtToken, String newPassword) {
+            String userId = jwtTokenProvider.getUserIdFromToken(jwtToken);
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("해당 사용자를 찾을 수 없습니다."));
+
+            if (!newPassword.matches("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$")) {
+                throw new UserRegistrationException("비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.");
+            }
+
+            if (passwordEncoder.matches(newPassword,user.getPassword())) {
+                throw new UserRegistrationException("이전과 동일한 패스워드는 안됩니다.");
+            }
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+
+            return true;
     }
 }
 
