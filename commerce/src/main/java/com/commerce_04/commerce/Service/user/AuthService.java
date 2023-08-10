@@ -14,6 +14,7 @@ import com.commerce_04.commerce.Service.excpetions.UserRegistrationException;
 import com.commerce_04.commerce.Service.security.CustomUserDetailService;
 import com.commerce_04.commerce.config.security.JwtTokenProvider;
 import com.commerce_04.commerce.web.dto.user.Login;
+import com.commerce_04.commerce.web.dto.user.PublicInformation;
 import com.commerce_04.commerce.web.dto.user.SignUp;
 import com.commerce_04.commerce.web.dto.user.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -191,6 +193,10 @@ public class AuthService {
             }user.setAddress(updateUserRequest.getAddress());
             userRepository.save(user);
             return true;
+    }
+    public User getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("해당 사용자를 찾을 수 없습니다."));
     }
 }
 
