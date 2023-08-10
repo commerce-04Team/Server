@@ -2,14 +2,15 @@ package com.commerce_04.commerce.web.controller.inquiry;
 
 import com.commerce_04.commerce.Service.inquiry.InquiryService;
 import com.commerce_04.commerce.web.dto.inquiry.AnswerInquireRequest;
+import com.commerce_04.commerce.web.dto.inquiry.GetInquiryDetailResponse;
 import com.commerce_04.commerce.web.dto.inquiry.InquiriesReceivedResponse;
 import com.commerce_04.commerce.web.dto.inquiry.InquiriesSentResponse;
-import com.commerce_04.commerce.web.dto.inquiry.GetInquiryDetailResponse;
 import com.commerce_04.commerce.web.dto.inquiry.ToInquireRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +67,15 @@ public class InquiryController {
 		@RequestParam String userId
 	) {
 		return ResponseEntity.ok(inquiryService.getInquiresReceived(userId));
+	}
+
+	@DeleteMapping
+	public ResponseEntity<?> deleteInquiry(
+		@RequestParam String userId,
+		@RequestParam Long inquiryId
+	) {
+		inquiryService.deleteInquiry(userId, inquiryId);
+		return ResponseEntity.ok(inquiryId + " 해당 문의가 삭제되었습니다.");
 	}
 
 
