@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import com.commerce_04.commerce.web.dto.product.ProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,5 +35,12 @@ public class ProductImage {
 
 	@Column(name = "image_url", nullable = false)
 	private String imageUrl;
+
+	public static ProductImage toEntity(String image, Product product) {
+		return ProductImage.builder()
+				.product(product)
+				.imageUrl(image)
+				.build();
+	}
 
 }

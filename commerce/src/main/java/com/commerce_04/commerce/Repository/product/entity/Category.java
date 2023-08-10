@@ -1,13 +1,8 @@
 package com.commerce_04.commerce.Repository.product.entity;
 
 import com.commerce_04.commerce.Repository.inquiry.entity.InquiryStatusType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
