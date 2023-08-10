@@ -15,6 +15,7 @@ import com.commerce_04.commerce.Service.security.CustomUserDetailService;
 import com.commerce_04.commerce.config.security.JwtTokenProvider;
 import com.commerce_04.commerce.web.dto.user.Login;
 import com.commerce_04.commerce.web.dto.user.SignUp;
+import com.commerce_04.commerce.web.dto.user.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -167,6 +168,28 @@ public class AuthService {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
 
+            return true;
+    }
+    @Transactional
+    public boolean updateUser(String userId, UpdateUserRequest updateUserRequest) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("해당 사용자를 찾을 수 없습니다."));
+
+            if (updateUserRequest.getEmail() == null || userPrincipalRepository.existsByEmail(updateUserRequest.getEmail())) {
+                throw new UserRegistrationException("이미 등록된 이메일이거나 공백입니다.");
+            } user.setEmail(updateUserRequest.getEmail());
+
+            if (updateUserRequest.getNickName() == null || userRepository.existsUserByNickName(updateUserRequest.getNickName())) {
+                throw new UserRegistrationException("이미 등록된 닉네임이거나 공백입니다.");
+            }   user.setNickName(updateUserRequest.getNickName());
+
+            if (updateUserRequest.getName() == null ) {
+                throw new UserRegistrationException("이름이 공백입니다.");
+            } user.setUserName(updateUserRequest.getName());
+            if (updateUserRequest.getAddress() == null){
+                throw new UserRegistrationException("주소가 공백입니다.");
+            }user.setAddress(updateUserRequest.getAddress());
+            userRepository.save(user);
             return true;
     }
 }

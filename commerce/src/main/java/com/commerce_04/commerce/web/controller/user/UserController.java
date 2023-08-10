@@ -5,6 +5,7 @@ import com.commerce_04.commerce.Repository.user.Entity.User;
 import com.commerce_04.commerce.Service.user.AuthService;
 import com.commerce_04.commerce.config.security.JwtTokenProvider;
 import com.commerce_04.commerce.web.dto.user.Login;
+import com.commerce_04.commerce.web.dto.user.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -48,15 +49,6 @@ public class UserController {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-//    @DeleteMapping("/users/{userId}")
-//    public ResponseEntity<String> deleteUser(@PathVariable String userId, @RequestParam String password) {
-//        boolean isSuccess = authService.deleteUser(userId, password);
-//        if (isSuccess) {
-//            return ResponseEntity.ok("회원탈퇴 성공하였습니다.");
-//        } else {
-//            return ResponseEntity.badRequest().body("회원탈퇴 실패하였습니다.");
-//        }
-//    }
         @DeleteMapping("/deleteUser")
         public ResponseEntity<String> deleteUser(@RequestHeader("X-AUTH-TOKEN") String jwtToken) {
 
@@ -91,4 +83,21 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
             }
         }
+    @PutMapping("/updateUser")
+        public ResponseEntity<String> updateUser(@RequestHeader("X-AUTH-TOKEN") String jwtToken,
+                                             @RequestBody UpdateUserRequest updateUserRequest) {
+            if (jwtToken != null && jwtTokenProvider.validateToken(jwtToken)) {
+            String userId = jwtTokenProvider.getUserIdFromToken(jwtToken);
+
+            boolean isSuccess = authService.updateUser(userId, updateUserRequest);
+
+            if (isSuccess) {
+                return ResponseEntity.ok("회원 정보 수정에 성공하였습니다.");
+            } else {
+                return ResponseEntity.badRequest().body("회원 정보 수정에 실패하였습니다.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+        }
+    }
 }
