@@ -4,6 +4,7 @@ import com.commerce_04.commerce.Service.product.ProductService;
 import com.commerce_04.commerce.web.dto.product.AddProduct;
 import com.commerce_04.commerce.web.dto.product.ProductDto;
 import com.commerce_04.commerce.web.dto.product.ProductResponse;
+import com.commerce_04.commerce.web.dto.product.UpdateProduct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +39,19 @@ public class ProductController {
 
     @GetMapping("/store")
     public ProductResponse getStoreProducts(@RequestParam Long storeId) {
-        List<ProductDto> storeProducts=productService.getStoreProducts(storeId);
+        List<ProductDto> storeProducts = productService.getStoreProducts(storeId);
         return new ProductResponse(storeProducts);
     }
 
+    //    @PutMapping
+//    public ProductDto updateProduct(@RequestBody UpdateProduct product) {
+//        return productService.updateProduct(product);
+//    }
+
+    @PutMapping
+    public ResponseEntity<?> updateProduct(@RequestBody UpdateProduct product) {
+        productService.updateProduct(product);
+        return ResponseEntity.ok("상품이 수정되었습니다!");
+    }
 
 }
