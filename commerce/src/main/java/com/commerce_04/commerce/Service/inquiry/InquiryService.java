@@ -14,7 +14,8 @@ import com.commerce_04.commerce.Repository.user.Entity.UserRepository;
 import com.commerce_04.commerce.Service.inquiry.exception.InquiryErrorCode;
 import com.commerce_04.commerce.Service.inquiry.exception.InquiryException;
 import com.commerce_04.commerce.web.dto.inquiry.AnswerInquireRequest;
-import com.commerce_04.commerce.web.dto.inquiry.GetInquiriesResponse;
+import com.commerce_04.commerce.web.dto.inquiry.InquiriesReceivedResponse;
+import com.commerce_04.commerce.web.dto.inquiry.InquiriesSentResponse;
 import com.commerce_04.commerce.web.dto.inquiry.GetInquiryDetailResponse;
 import com.commerce_04.commerce.web.dto.inquiry.ToInquireRequest;
 import java.time.LocalDateTime;
@@ -61,7 +62,7 @@ public class InquiryService {
 	}
 
 	@Transactional
-	public void answerInquireDetail(AnswerInquireRequest answerInquireRequest) {
+	public void answerInquire(AnswerInquireRequest answerInquireRequest) {
 
 		String inputUserId = answerInquireRequest.getUserId();
 		Long inputInquiryId = answerInquireRequest.getInquiryId();
@@ -94,7 +95,11 @@ public class InquiryService {
 				InquiryErrorCode.NO_INQUIRY_MATCHES));
 	}
 
-	public List<GetInquiriesResponse> getInquiresSent(String userId) {
-		return GetInquiriesResponse.toResponse(inquiryRepository.findAllByUserId(userId));
+	public List<InquiriesSentResponse> getInquiresSent(String userId) {
+		return InquiriesSentResponse.toResponse(inquiryRepository.findAllByUserId(userId));
+	}
+
+	public List<InquiriesReceivedResponse> getInquiresReceived(String userId) {
+		return 		InquiriesReceivedResponse.toResponse(inquiryRepository.findInquiriesReceivedByUserId(userId));
 	}
 }
