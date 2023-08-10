@@ -1,5 +1,6 @@
-package com.commerce_04.commerce.Repository.product.entity;
+package com.commerce_04.commerce.Repository.purchase.entity;
 
+import com.commerce_04.commerce.Repository.product.entity.Product;
 import com.commerce_04.commerce.Repository.user.Entity.User;
 import lombok.*;
 
@@ -30,4 +31,11 @@ public class Purchase {
     @Column(name = "purchase_at", nullable = false)
     private LocalDateTime purchaseAt;
 
+    public static Purchase toEntity(User user,Product product) {
+        return Purchase.builder()
+                .product(product)
+                .user(user)
+                .purchaseAt(LocalDateTime.now())
+                .build();
+    }
 }
