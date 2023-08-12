@@ -38,7 +38,6 @@ public class CustomUserDetailService implements UserDetailsService {
 
         UserPrincipal userPrincipal = userPrincipalRepository.findByEmailFetchJoin(id).orElseThrow( () -> new UsernameNotFoundException("아이디가 틀렸습니다."));
 
-        log.info("inputPassword : {} ",inputPassword);
 
         if (!passwordEncoder().matches(inputPassword, userPrincipal.getPassword())) {
             throw new UsernameNotFoundException("비밀번호가 틀렸습니다.");
