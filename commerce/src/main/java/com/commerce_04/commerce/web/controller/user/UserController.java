@@ -7,7 +7,6 @@ import com.commerce_04.commerce.config.security.JwtTokenProvider;
 import com.commerce_04.commerce.web.dto.user.Login;
 import com.commerce_04.commerce.web.dto.user.PublicInformation;
 import com.commerce_04.commerce.web.dto.user.UpdateUserRequest;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,9 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -58,7 +54,7 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@RequestHeader("X-AUTH-TOKEN") String jwtToken) {
 
         if (jwtToken != null && jwtTokenProvider.validateToken(jwtToken)) {
-            String userId = jwtTokenProvider.getUserIdFromToken(jwtToken);
+            String userId = jwtTokenProvider.getUserId(jwtToken);
             boolean isSuccess = authService.deleteUser(userId);
 
             if (isSuccess) {
@@ -74,12 +70,7 @@ public class UserController {
     @PostMapping("/changePassword")
     public ResponseEntity<String> changePassword(@RequestHeader("X-AUTH-TOKEN") String jwtToken, @RequestBody Login request) {
         if (jwtToken != null && jwtTokenProvider.validateToken(jwtToken)) {
-
-            log.info("Controller Request Password : {} ", request.getPassword());
-
-
             boolean isSuccess = authService.changePassword(jwtToken, request.getPassword());
-
             if (isSuccess) {
                 return ResponseEntity.ok("비밀번호 변경에 성공하였습니다.");
             } else {
@@ -94,7 +85,7 @@ public class UserController {
     public ResponseEntity<String> updateUser(@RequestHeader("X-AUTH-TOKEN") String jwtToken,
                                              @RequestBody UpdateUserRequest updateUserRequest) {
         if (jwtToken != null && jwtTokenProvider.validateToken(jwtToken)) {
-            String userId = jwtTokenProvider.getUserIdFromToken(jwtToken);
+            String userId = jwtTokenProvider.getUserId(jwtToken);
 
             boolean isSuccess = authService.updateUser(userId, updateUserRequest);
 
@@ -111,15 +102,20 @@ public class UserController {
     @GetMapping("/getUser")
     public PublicInformation getUserById(@RequestParam String userId) {
         User user = authService.getUserById(userId);
-        return new PublicInformation(user.getNickName(),user.getEmail());
+        return new PublicInformation(user.getNickName(), user.getEmail());
     }
-    @PostMapping("/changeUserRole")
-    public ResponseEntity<String> changeUserRole(@RequestParam String userId, @RequestParam String roles) {
-        boolean isSuccess = authService.changeUserRole(userId,roles);
-        if (isSuccess) {
-            return ResponseEntity.ok("사용자 권한 변경에 성공하였습니다.");
+
+    @PostMapping("/admin/changeUserRole")
+    public ResponseEntity<String> changeUserRole(@RequestHeader("X-AUTH-TOKEN") String jwtToken, @RequestParam String userId, @RequestParam String roles) {
+        boolean isSuccess = authService.changeUserRole(userId, roles, jwtToken);
+        if (jwtToken != null && jwtTokenProvider.validateToken(jwtToken)) {
+            if (isSuccess) {
+                return ResponseEntity.ok("사용자 권한 변경에 성공하였습니다.");
+            } else {
+                return ResponseEntity.badRequest().body("사용자 권한 변경에 실패하였습니다.");
+            }
         } else {
-            return ResponseEntity.badRequest().body("사용자 권한 변경에 실패하였습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
         }
     }
 }

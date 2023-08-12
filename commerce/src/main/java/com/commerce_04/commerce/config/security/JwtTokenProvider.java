@@ -1,10 +1,12 @@
 package com.commerce_04.commerce.config.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenProvider {
 
     private String secretKey = "Super-Coding";
@@ -67,24 +70,25 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String jwtToken) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserEmail(jwtToken));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserId(jwtToken));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getUserEmail(String jwtToken) {
-        String userEmail = Jwts.parser()
+    public String getUserId(String jwtToken) {
+        String userId = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwtToken)
                 .getBody()
                 .getSubject();
-        return userEmail;
+        return userId;
     }
-
-    public String getUserIdFromToken(String jwtToken) {
-        Claims claims = Jwts.parser()
+    public String getUserRoles(String jwtToken){
+        List<String> roleList = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwtToken)
-                .getBody();
-        return claims.get("userId",String.class);
+                .getBody()
+                .get("roles",List.class);
+        String roles = String.join(",",roleList);
+        return roles;
     }
 }

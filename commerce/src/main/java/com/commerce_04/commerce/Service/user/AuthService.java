@@ -174,7 +174,7 @@ public class AuthService {
 
     @Transactional
     public boolean changePassword(String jwtToken, String newPassword) {
-        String userId = jwtTokenProvider.getUserIdFromToken(jwtToken);
+        String userId = jwtTokenProvider.getUserId(jwtToken);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("해당 사용자를 찾을 수 없습니다."));
@@ -226,8 +226,11 @@ public class AuthService {
     }
 
     @Transactional
-    public boolean changeUserRole(String userId,String roles) {
+    public boolean changeUserRole(String userId,String roles,String jwtToken) {
         Roles role;
+        String UserRoles = jwtTokenProvider.getUserRoles(jwtToken);
+        log.info("UserRoles : {}",UserRoles);
+        if(!UserRoles.matches("ADMIN_USER")) throw new UserRegistrationException("해당 유저는 관리자가 아닙니다. 그러므로 권한을 변경할 수 없습니다");
         if (roles.matches("Ban")) {
             role = rolesRepository.findByName("SUSPENDED_USER")
                     .orElseThrow(() -> new NotFoundException("해당 역할이 없습니다."));

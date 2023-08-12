@@ -25,19 +25,18 @@ public class SecurityConfig{
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
                 http.headers().frameOptions().sameOrigin()
-                        .and().formLogin().disable()
-                        .csrf().disable()
-                        .httpBasic().disable()
-                        .rememberMe().disable()
-                        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        .and()
-                        .authorizeRequests()
-//                        .antMatchers("/admin/*").hasRole("ADMIN_USER") 미구현
-                        .antMatchers("/resources/static/**","/v1/api/*").permitAll()
-//                        .antMatchers("/v1/api/*").hasRole("SUSPENDED_USER") 미구현
-                        .and()
-                        .exceptionHandling()
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                                .and().formLogin().disable()
+                                .csrf().disable()
+                                .httpBasic().disable()
+                                .rememberMe().disable()
+                                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                                .and()
+                                .authorizeRequests()
+//                                .antMatchers("/v1/api/admin/*").hasRole("ADMIN_USER")
+                                .antMatchers("/resources/static/**","/v1/api/*").permitAll()
+                                .and()
+                                .exceptionHandling()
+                                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                         .accessDeniedHandler(new CustomerAccessDeniedHandler())
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
