@@ -8,36 +8,21 @@ import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipal;
 import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipalRepository;
 import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipalRoles;
 import com.commerce_04.commerce.Repository.userPrincipal.UserPrincipalRolesRepository;
-import com.commerce_04.commerce.Service.excpetions.NotAcceptException;
 import com.commerce_04.commerce.Service.excpetions.NotFoundException;
 import com.commerce_04.commerce.Service.excpetions.UserRegistrationException;
 import com.commerce_04.commerce.Service.security.CustomUserDetailService;
 import com.commerce_04.commerce.config.security.JwtTokenProvider;
-import com.commerce_04.commerce.web.dto.user.Login;
-import com.commerce_04.commerce.web.dto.user.PublicInformation;
-import com.commerce_04.commerce.web.dto.user.SignUp;
-import com.commerce_04.commerce.web.dto.user.UpdateUserRequest;
+import com.commerce_04.commerce.web.dto.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.management.relation.Role;
-import javax.security.auth.login.LoginException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -79,7 +64,8 @@ public class AuthService {
                 .orElseThrow(() -> new NotFoundException("UserPrincipal을 찾을 수 없습니다"));
         List<String> roles = userPrincipal.getUserPrincipalRoles()
                 .stream().map(UserPrincipalRoles::getRoles).map(Roles::getName).collect(Collectors.toList());
-        return jwtTokenProvider.createToken(userId, roles);
+
+        return jwtTokenProvider.createToken(userId, roles,passwordEncoder.encode(password));
     }
 
 

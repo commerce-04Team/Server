@@ -99,11 +99,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/getUser")
-    public PublicInformation getUserById(@RequestParam String userId) {
-        User user = authService.getUserById(userId);
-        return new PublicInformation(user.getNickName(), user.getEmail());
-    }
+
 
     @PostMapping("/admin/changeUserRole")
     public ResponseEntity<String> changeUserRole(@RequestHeader("X-AUTH-TOKEN") String jwtToken, @RequestParam String userId, @RequestParam String roles) {
@@ -117,6 +113,11 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
         }
+    }
+    @GetMapping("/getUser")
+    public PublicInformation getUserById(@RequestParam String userId) {
+        User user = authService.getUserById(userId);
+        return new PublicInformation(user.getNickName(), user.getEmail());
     }
 }
 
